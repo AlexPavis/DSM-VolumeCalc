@@ -19,6 +19,7 @@ raster.triggerRepaint()
 #Draws contours on the DSM at 150m 
 raster = [l for l in QgsProject().instance().mapLayers().values() if isinstance(l, QgsRasterLayer) and 'DSM' in l.name()][0]
 
+#The interval value can be changed depending on the range of the used DSM
 processing.runAndLoadResults("gdal:contour", 
     {'INPUT':raster,
     'BAND':1,
@@ -30,17 +31,18 @@ processing.runAndLoadResults("gdal:contour",
 processing.run("qgis:rastersurfacevolume",
 { 'BAND' : 1,
 'INPUT' : 'DSM',
+#Level referes to elevation above/below that is used in the volume calculation
 'LEVEL' : 0,
+#Method, 0 = volume above base level, 1 = volume below base level
 'METHOD' : 0,
 'OUTPUT_HTML_FILE' : 'C:/Users/61428/Documents/MajorProj/VolumeReport.html',
-#'OUTPUT_TABLE' : 'Surface_volume_table_0f8fc682_3b88_43b0_a661_3c13c1219347'
 })
 
 #Greater than and less than raster (Shows portion of land used in volume calculation)
 input_raster = QgsRasterLayer('C:/Users/61428/Documents/MajorProj/DSM.tif', 'raster')      
 output_raster = 'C:/Users/61428/Documents/MajorProj/DSMCALC.tif'
 
-
+#The ratser caclulator is used to create a new raster with all the areas >150m appearing in white and <150m appearing in black
 parameters = {'INPUT_A' : input_raster,
         'BAND_A' : 1,
         'FORMULA' : '(A > 150)', 
